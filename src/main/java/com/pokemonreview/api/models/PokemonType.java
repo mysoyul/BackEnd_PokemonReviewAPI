@@ -27,8 +27,8 @@ public enum PokemonType {
 
     public static List<String> nameList() {
         return Arrays.stream(PokemonType.values())
-                .map(value -> value.name())
-                //.map(Enum::name)
+                //.map(value -> value.name())
+                .map(Enum::name)
                 .collect(Collectors.toList());  //List<String>
     }
 }

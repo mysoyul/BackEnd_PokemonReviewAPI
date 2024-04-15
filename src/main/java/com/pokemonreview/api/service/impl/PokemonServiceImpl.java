@@ -6,6 +6,7 @@ import com.pokemonreview.api.exceptions.ResourceNotFoundException;
 import com.pokemonreview.api.models.Pokemon;
 import com.pokemonreview.api.repository.PokemonRepository;
 import com.pokemonreview.api.service.PokemonService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,13 +19,14 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class PokemonServiceImpl implements PokemonService {
-    private PokemonRepository pokemonRepository;
+    private final PokemonRepository pokemonRepository;
 
     //Constructor Injection
-    public PokemonServiceImpl(PokemonRepository pokemonRepository) {
-        this.pokemonRepository = pokemonRepository;
-    }
+//    public PokemonServiceImpl(PokemonRepository pokemonRepository) {
+//        this.pokemonRepository = pokemonRepository;
+//    }
 
     @Override
     public PokemonDto createPokemon(PokemonDto pokemonDto) {
@@ -44,9 +46,11 @@ public class PokemonServiceImpl implements PokemonService {
         List<Pokemon> listOfPokemon = pokemonPage.getContent();
         List<PokemonDto> content = listOfPokemon
                 .stream() //Stream<Pokemon>
-                .map(p -> mapToDto(p)) //Stream<PokemonDto>
-                //.map(this::mapToDto)
-                .collect(Collectors.toList()); //List<PokemonDto>
+                //람다식
+                //.map(p -> mapToDto(p)) //Stream<PokemonDto>
+                //Method Reference
+                .map(this::mapToDto)
+                .toList(); //List<PokemonDto>
 
         PageResponse<PokemonDto> pokemonResponse = new PageResponse<>();
         pokemonResponse.setContent(content);
@@ -55,7 +59,7 @@ public class PokemonServiceImpl implements PokemonService {
         pokemonResponse.setTotalElements(pokemonPage.getTotalElements());
         pokemonResponse.setTotalPages(pokemonPage.getTotalPages());
         pokemonResponse.setLast(pokemonPage.isLast());
-
+        pokemonResponse.setFirst(pokemonPage.isFirst());
         return pokemonResponse;
     }
 
@@ -67,7 +71,7 @@ public class PokemonServiceImpl implements PokemonService {
 
     private Pokemon getExistPokemon(int id) {
         Pokemon pokemon = pokemonRepository
-                .findById(id)
+                .findById(id)  //Optional<Pokemon>
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Pokemon could not be found"));
         return pokemon;
