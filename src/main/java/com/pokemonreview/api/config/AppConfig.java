@@ -18,12 +18,13 @@ import java.util.stream.IntStream;
 @Profile("local")
 public class AppConfig {
     @Bean
-    public CommandLineRunner test(PokemonRepository pokemonRepository, ReviewRepository reviewRepository) {
+    public CommandLineRunner test(PokemonRepository pokemonRepository,
+                                  ReviewRepository reviewRepository) {
         return args -> {
             System.out.println("**** Pokemon Insert 시작");
             //pokemonRepository.deleteAll();
             List<Pokemon> pokemonList = IntStream.rangeClosed(1, 10)
-                    .mapToObj(i -> Pokemon.builder()
+                    .mapToObj(i -> Pokemon.builder() //PokemonBuilder
                             .name("pikachu" + i)
                             .type(PokemonType.ELECTRIC)
                             .build())
